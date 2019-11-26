@@ -7,15 +7,26 @@ const yargs = require('yargs');
 const argv = yargs
   .option('target-node', {
     alias: 't',
-    description: 'Specifies the target node',
+    description: 'Specifies the target node.',
     type: 'string'
   })
   .option('min-capacity', {
     alias: 'c',
-    description: 'Minimum channel capacity to be considered in the analysis',
+    description: 'Minimum channel capacity to be considered in the analysis.',
     type: 'number',
     default: 95000
   })
+  .option('min-last-update', {
+    alias: 'lu',
+    description: 'The minimum value for a the `last_update` value of a channel, measured as an POSIX timestamp.',
+    type: 'number'
+  })
+  .option('max-channel-inactivity', {
+    alias: 'ci',
+    description: 'The maximum amount channel inactivity to be allowed, measured in seconds and relative to the time this script is executed.',
+    type: 'number'
+  })
+  .conflicts('min-last-update','max-channel-inactivity')
   .demandOption('target-node', 'Please provide a target node for analysis')
   .help()
   .alias('help', 'h')
@@ -23,6 +34,13 @@ const argv = yargs
 
 // The node of interest
 const targetPubKey = argv.targetNode;
+
+let MIN_LAST_UPDATE = 0;
+if(argv.minLastUpdate){
+  MIN_LAST_UPDATE = argv.minLastUpdate;
+}else if(argv.maxChannelInactivity){
+  MIN_LAST_UPDATE = (new Date().getTime() / 1000) - argv.maxChannelInactivity;
+}
 
 let sorted = [];
 
@@ -33,8 +51,7 @@ for(let i = 0; i < lnGraph.edges.length; i++){
     const node1 = lnGraph.nodes.find(node => node.pub_key === edge.node1_pub);
     const node2 = lnGraph.nodes.find(node => node.pub_key === edge.node2_pub);
     const now = parseInt(new Date().getTime() / 1000);
-    const MAX_LAST_UPDATE = 60 * 60 * 24;
-    if(now - node1.last_update < MAX_LAST_UPDATE && now - node2.last_update < MAX_LAST_UPDATE){
+    if(node1.last_update > MIN_LAST_UPDATE && node2.last_update > MIN_LAST_UPDATE){
       g.addLink(edge.node1_pub, edge.node2_pub);
     }
   }
@@ -93,8 +110,7 @@ for(let i = 0; i < sorted.length && i < SIMULATION_COUNT; i++){
       const node1 = lnGraph.nodes.find(node => node.pub_key === edge.node1_pub);
       const node2 = lnGraph.nodes.find(node => node.pub_key === edge.node2_pub);
       const now = parseInt(new Date().getTime() / 1000);
-      const MAX_LAST_UPDATE = 60 * 60 * 24 * 3;
-      if(now - node1.last_update < MAX_LAST_UPDATE && now - node2.last_update < MAX_LAST_UPDATE){
+      if(node1.last_update > MIN_LAST_UPDATE && node2.last_update > MIN_LAST_UPDATE){
         g.addLink(edge.node1_pub, edge.node2_pub);
       }
     }
