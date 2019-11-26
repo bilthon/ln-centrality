@@ -12,5 +12,10 @@
     "centrality"
   ],
   "author": "Nelson R. Pérez",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "ngraph.centrality": "^2.0.0",
+    "ngraph.graph": "^19.0.0",
+    "yargs": "^15.0.2"
+  }
 }
