@@ -75,8 +75,8 @@ sorted = Object
           .keys(betweenness)
           .map(key => Object.assign({pubkey: key, betweeness: betweenness[key]}))
           .sort((first, second) => second.betweeness - first.betweeness);
-const index = sorted.findIndex(node => node.pubkey === targetPubKey);
-if(index < 0) {
+const rank = sorted.findIndex(node => node.pubkey === targetPubKey);
+if(rank < 0) {
   console.error('Error: could not find target node in the graph');
   return;
 }
@@ -90,9 +90,9 @@ for(let i = 0; i < sorted.length; i++){
   console.log(`${i}]..............: ${sorted[i].pubkey}, ${sorted[i].betweeness}`);
 }
 console.log('-- Node of Interest --');
-console.log(`Pubkey...........: ${sorted[index].pubkey}`);
-console.log(`Betweeenness.....: ${sorted[index].betweeness}`);
-console.log(`Node rank........: ${index}\n`);
+console.log(`Pubkey...........: ${sorted[rank].pubkey}`);
+console.log(`Betweeenness.....: ${sorted[rank].betweeness}`);
+console.log(`Node rank........: ${rank}\n`);
 
 // Clearing graph
 g.clear();
@@ -140,11 +140,9 @@ for(let i = 0; i < sorted.length && i < SIMULATION_COUNT; i++){
 
   // Results
   console.log('-- Time result --')
-  console.log(`Main processing....: [main: ${(t1 - t0) / 1000} ms.| post: ${(t2 - t1) / 1000}]`);
-  console.log(`Node of interest...: ${sorted[index].pubkey}`);
-  console.log(`Current node rank..: ${index}`);
-  console.log(`Current betweenness: ${sorted[index].betweeness}`);
-  console.log(`Altered betweenness: ${betweenness[targetPubKey]}`);
+  console.log(`Processing time......: [main: ${(t1 - t0) / 1000} ms.| post: ${(t2 - t1) / 1000}]`);
+  console.log(`Resulting node rank..: ${index}, jumped ${rank - index} positions`);
+  console.log(`Altered betweenness..: ${betweenness[targetPubKey]}`);
   simResult.push({
     betweenness: betweenness[targetPubKey],
     target: targetPubKey
