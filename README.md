@@ -1,9 +1,12 @@
 # ln-centrality
 
-Script used to analyze the betweenness centrality of your node in the network and make channel suggestions 
+Script used to analyze the betweenness centrality of your node in the network and make channel suggestions.
 
+## Disclaimer
+First of all, this is pretty much a work in progress, so expect *a lot of* rough edges. But since it just analyzes the network description, no funds will be at risk.
 
 ## Introduction
+
 This tool is meant to analyze the topology of the LN as presented by the command `lncli describegraph`. The idea here is to analyze how well connected your node is and to suggest which nodes will significantly improve your position in the network if you were to open channels with them.
 
 The main concept here is the one of [betweenness centrality](https://en.wikipedia.org/wiki/Betweenness_centrality). This property roughly means how much a particular node acts as a "bridge" given a specific network graph.
@@ -11,12 +14,36 @@ The main concept here is the one of [betweenness centrality](https://en.wikipedi
 This anlysis only considers the raw network topology though and ignores channel capacities & fee rates.
 
 ## Use
+On the machine where your `lnd` instance is running, type: 
+```
+lncli describegraph > graph.json
+```
+
+The move the resulting `graph.json` file to the `src/assets` folder.
+
+Then:
+
 ```
 node . -t <target_node_id>
 ```
 
-## Example
+## Options
+```
+Options:
+  --version                       Show version number                  [boolean]
+  --target-node, -t               Specifies the target node. [string] [required]
+  --min-capacity, -c              Minimum channel capacity to be considered in
+                                  the analysis.        [number] [default: 95000]
+  --min-last-update, --lu         The minimum value for a the `last_update`
+                                  value of a channel, measured as an POSIX
+                                  timestamp.                            [number]
+  --max-channel-inactivity, --ci  The maximum amount channel inactivity to be
+                                  allowed, measured in seconds and relative to
+                                  the time this script is executed.     [number]
+  --help, -h                      Show help                            [boolean]
+```
 
+## Example
 ```
 node . -t 02f6725f9c1c40333b67faea92fd211c183050f28df32cac3f9d69685fe9665432
 ```
@@ -75,6 +102,7 @@ There are still many things that can be improved on this. But here are just some
 - When simulating, we don't need to recalculate the betweenness of the whole network again, this is a major waste of resources, but since the graph library I'm using doesn't allow to calculate the betweeness of a single node, this is how it works now.
 - Maybe the simulation work (specially now that is so inneficient) could be split into several workers.
 - Analyzing the betweenness after adding a channel is interesting, but we should also allow the user to calculate the betweenness resulting from the removal of an existing channel, thus suggesting which channels could be removed and have their funds better allocated somewhere else.
+- A way to obtain the graph description over the network is a must, currently the script expects the LN graph description to be at `src/assets/graph.json`, but this should ideally be obtained from the `lnd` instance on-demand.
 - Taking in consideration channel rates?
 
 The original idea came from [this video](https://www.youtube.com/watch?v=L39IvFqTZk8&feature=youtu.be&t=213)
