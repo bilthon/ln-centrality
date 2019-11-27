@@ -103,6 +103,7 @@ There are still many things that can be improved on this. But here are just some
 - Maybe the simulation work (specially now that is so inneficient) could be split into several workers.
 - Analyzing the betweenness after adding a channel is interesting, but we should also allow the user to calculate the betweenness resulting from the removal of an existing channel, thus suggesting which channels could be removed and have their funds better allocated somewhere else.
 - A way to obtain the graph description over the network is a must, currently the script expects the LN graph description to be at `src/assets/graph.json`, but this should ideally be obtained from the `lnd` instance on-demand.
+- It would probably be better to separate the initial analysis from the simulation. I might introduce some commands for this.
 - Taking in consideration channel rates?
 
 The original idea came from [this video](https://www.youtube.com/watch?v=L39IvFqTZk8&feature=youtu.be&t=213)
