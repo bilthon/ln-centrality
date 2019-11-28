@@ -14,6 +14,12 @@ The main concept here is the one of [betweenness centrality](https://en.wikipedi
 This anlysis only considers the raw network topology though and ignores channel capacities & fee rates.
 
 ## Use
+
+After cloning, enter the `ln-centrality` directory and install dependencies.
+```
+npm install
+```
+
 On the machine where your `lnd` instance is running, type: 
 ```
 lncli describegraph > graph.json
